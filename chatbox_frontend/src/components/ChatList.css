@@ -1,0 +1,41 @@
+/* ChatList.css */
+.chat-list-container {
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 400px;
+    width: 300px;
+}
+
+.chat-list-item {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.chat-list-item:last-child {
+    border-bottom: none;
+}
+
+.chat-list-item.active {
+    background-color: #cedff1;
+    color: white;
+}
+
+.chat-name {
+    font-weight: bold;
+}
+
+.chat-details {
+    margin-left: 10px;
+}
+
+.chat-conversation {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    max-height: 300px;
+    overflow-y: auto;
+}
