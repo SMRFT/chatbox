@@ -36,8 +36,7 @@ const ChatList = ({ chatlist = [], onChatSelect }) => {
                     <div 
                         key={index} 
                         className={`chat-list-item ${selectedUser === user ? 'active' : ''}`} 
-                        onClick={() => handleChatSelect(user)}
-                    >
+                        onClick={() => handleChatSelect(user)} >
                         {user.name}
                     </div>
                 ))}
