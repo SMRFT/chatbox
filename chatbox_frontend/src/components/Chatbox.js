@@ -1,4 +1,3 @@
-// Chatbox.js
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button } from 'react-bootstrap';
@@ -28,13 +27,13 @@ const Chatbox = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
     
-        if (!initialMessageSent) {
-            const message = {
-                user: user || 'Anonymous',
-                content: newMessage,
-                timestamp: new Date()
-            };
+        const message = {
+            user: user || 'Anonymous',
+            content: newMessage,
+            timestamp: new Date()
+        };
 
+        if (!initialMessageSent) {
             if (!activeChat) {
                 setMessages(prevMessages => {
                     const tempMessages = prevMessages.temp || [];
@@ -51,12 +50,6 @@ const Chatbox = () => {
             setInitialMessageSent(true);
             setFormVisible(true);
         } else {
-            const message = {
-                user: user || 'Anonymous',
-                content: newMessage,
-                timestamp: new Date()
-            };
-
             setMessages(prevMessages => {
                 const userMessages = prevMessages[activeChat.email] || [];
                 return { ...prevMessages, [activeChat.email]: [...userMessages, message] };
@@ -89,9 +82,25 @@ const Chatbox = () => {
         setInitialMessageSent(false);
     };
 
+    const handleAdminMessage = (adminMessage) => {
+        if (adminMessage.trim() !== '') {
+            const newMessage = {
+                user: 'Admin',
+                content: adminMessage,
+                timestamp: new Date()
+            };
+            const email = activeChat.email;
+
+            setMessages(prevMessages => {
+                const userMessages = prevMessages[email] || [];
+                return { ...prevMessages, [email]: [...userMessages, newMessage] };
+            });
+        }
+    };
+
     return (
         <div>
-            <div><center><h1>Shanmuga Hospital</h1></center></div>
+            <div style={{marginTop:'2%'}}><center><h1>Shanmuga Hospital</h1></center></div>
             {!isChatboxOpen && (
                 <div 
                     className="chat-icon"
@@ -101,19 +110,26 @@ const Chatbox = () => {
                 </div>
             )}
 
-            {isChatboxOpen && initialView && (
-                <div className="chatbox">
-                    <div className="chatbox-header">
-                        <h3>Conversation(s)</h3>
-                        <button type="button" className="btn-close" aria-label="Close" onClick={() => setIsChatboxOpen(false)}></button>
-                    </div>
-                    <div className="chatbox-content text-center">
-                        <i className="bi bi-chat-dots" style={{ fontSize: '50px', color: '#999' }}></i>
-                        <p>No ongoing conversation</p>
-                        <Button variant="primary" onClick={() => setInitialView(false)}>Chat Now</Button>
-                    </div>
-                </div>
+{isChatboxOpen && (initialView || chatlist.length === 0) && (
+    <div className="chatbox">
+        <div className="chatbox-header">
+            <h3>{initialView ? "Conversation(s)" : "No ongoing conversation"}</h3>
+            <button type="button" className="btn-close" aria-label="Close" onClick={() => setIsChatboxOpen(false)}></button>
+        </div>
+        <div className="chatbox-content text-center">
+            {initialView ? (
+                <>
+                    <i className="bi bi-chat-dots" style={{ fontSize: '50px', color: '#999' }}></i>
+                    <p>No ongoing conversation</p>
+                    <Button variant="primary" onClick={() => setInitialView(false)}>Chat Now</Button>
+                </>
+            ) : (
+                <p>No ongoing conversation</p>
             )}
+        </div>
+    </div>
+)}
+
 
             {isChatboxOpen && !initialView && (
                 <div className="chatbox">
@@ -189,7 +205,7 @@ const Chatbox = () => {
             )}
 
             {isChatboxOpen && (
-                 <ChatList chatlist={chatlist} onChatSelect={handleChatSelect} />
+                <ChatList chatlist={chatlist} onChatSelect={handleChatSelect} messages={messages} onAdminMessage={handleAdminMessage} />
             )}
         </div>
     );

@@ -1,15 +1,13 @@
-// ChatList.js
 import React, { useState } from 'react';
 import './ChatList.css';
+import { FaPaperPlane, FaArrowLeft } from 'react-icons/fa';
 
-const ChatList = ({ chatlist = [], onChatSelect }) => {
+const ChatList = ({ chatlist = [], onChatSelect, messages, onAdminMessage }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [adminMessage, setAdminMessage] = useState('');
-    const [conversation, setConversation] = useState([]);
 
     const handleChatSelect = (user) => {
         setSelectedUser(user);
-        setConversation(user.messages || []);
         onChatSelect(user);
     };
 
@@ -19,32 +17,39 @@ const ChatList = ({ chatlist = [], onChatSelect }) => {
 
     const handleSendMessage = () => {
         if (adminMessage.trim() !== '') {
-            const newMessage = {
-                user: 'Admin',
-                content: adminMessage,
-                timestamp: new Date()
-            };
-            setConversation([...conversation, newMessage]);
+            onAdminMessage(adminMessage);
             setAdminMessage('');
         }
     };
 
+    const handleBackClick = () => {
+        setSelectedUser(null);
+    };
+
     return (
-        <div className="chat-list-container">
-            <div className="chat-list">
-                {chatlist.map((user, index) => (
-                    <div 
-                        key={index} 
-                        className={`chat-list-item ${selectedUser === user ? 'active' : ''}`} 
-                        onClick={() => handleChatSelect(user)} >
-                        {user.name}
+        <div className="whatsapp-container">
+            {!selectedUser ? (
+                <div className="sidebar">
+                    <div className="chat-list">
+                        {chatlist.map((user, index) => (
+                            <div 
+                                key={index} 
+                                className={`chat-list-item ${selectedUser && selectedUser.email === user.email ? 'active' : ''}`} 
+                                onClick={() => handleChatSelect(user)}>
+                                <div className="chat-details">
+                                    <div className="chat-name">{user.name}</div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-            {selectedUser && (
+                </div>
+            ) : (
                 <div className="chat-conversation-container">
+                    <button className="back-button" onClick={handleBackClick}>
+                        <FaArrowLeft /> Back
+                    </button>
                     <div className="chat-conversation">
-                        {conversation.map((message, index) => (
+                        {messages[selectedUser.email]?.map((message, index) => (
                             <div key={index}>
                                 <strong>{message.user}</strong>: {message.content} <em>({new Date(message.timestamp).toLocaleString()})</em>
                             </div>
@@ -58,7 +63,9 @@ const ChatList = ({ chatlist = [], onChatSelect }) => {
                             placeholder="Type your message..." 
                             className="chat-input" 
                         />
-                        <button className="send-button" onClick={handleSendMessage}>Send</button>
+                        <button className="send-button" onClick={handleSendMessage}>
+                            <FaPaperPlane />
+                        </button>
                     </div>
                 </div>
             )}
